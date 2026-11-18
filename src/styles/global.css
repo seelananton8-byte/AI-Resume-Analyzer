@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Brand Colors */
+  --primary: #6c5ce7;
+  --primary-dark: #5644cc;
+
+  /* Light Theme */
+  --text: #17172b;
+  --muted: #74748a;
+  --border: #ececf3;
+  --background: #f8f8fc;
+  --card-bg: #ffffff;
+
+  color-scheme: light;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --text: #f1efff;
+  --muted: #aaa7c0;
+  --border: #38354b;
+  --background: #171625;
+  --card-bg: #222133;
+
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--background);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}

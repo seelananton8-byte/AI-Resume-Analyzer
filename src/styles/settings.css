@@ -1,0 +1,275 @@
+.settings-page {
+  padding: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: #25213b;
+}
+
+.settings-header {
+  margin-bottom: 28px;
+}
+
+.settings-header h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.settings-header p {
+  color: #77758a;
+  font-size: 14px;
+}
+
+.settings-card {
+  background: #ffffff;
+  border: 1px solid #eae8f2;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 15px rgba(30, 20, 80, 0.03);
+}
+
+.settings-card-header {
+  margin-bottom: 20px;
+}
+
+.settings-card-header h2 {
+  font-size: 18px;
+  font-weight: 650;
+  margin-bottom: 6px;
+}
+
+.settings-card-header p {
+  color: #858297;
+  font-size: 13px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid #f0eef5;
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.setting-row h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.setting-row p {
+  color: #88859a;
+  font-size: 12px;
+}
+
+/* Toggle Switch */
+
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: #d8d5e2;
+  border-radius: 30px;
+  transition: 0.3s;
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: #7560df;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+}
+
+/* Theme Select */
+
+.settings-select {
+  padding: 10px 14px;
+  border: 1px solid #e1deeb;
+  border-radius: 9px;
+  background: #fff;
+  color: #33304a;
+  outline: none;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.settings-select:focus {
+  border-color: #7560df;
+}
+
+/* Password */
+
+.password-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.password-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.password-field label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.password-field input {
+  padding: 12px 14px;
+  border: 1px solid #e2dfeb;
+  border-radius: 9px;
+  font-size: 13px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.password-field input:focus {
+  border-color: #7560df;
+  box-shadow: 0 0 0 3px rgba(117, 96, 223, 0.1);
+}
+
+.password-field input::placeholder {
+  color: #aaa7b8;
+}
+
+/* Save Button */
+
+.settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 20px;
+}
+
+.save-settings-btn {
+  background: #7560df;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.save-settings-btn:hover {
+  background: #624dc9;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 20px 15px;
+  }
+
+  .settings-header h1 {
+    font-size: 25px;
+  }
+
+  .settings-card {
+    padding: 18px;
+  }
+
+  .setting-row {
+    gap: 12px;
+  }
+
+  .setting-row h3 {
+    font-size: 13px;
+  }
+
+  .setting-row p {
+    font-size: 11px;
+    max-width: 240px;
+  }
+
+  .password-form {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-select {
+    min-width: 110px;
+  }
+}
+
+@media (max-width: 480px) {
+  .settings-page {
+    padding: 15px 12px;
+  }
+
+  .settings-card {
+    padding: 15px;
+  }
+
+  .setting-row {
+    align-items: flex-start;
+  }
+
+  .settings-footer {
+    width: 100%;
+  }
+
+  .save-settings-btn {
+    width: 100%;
+  }
+}
+
+.settings-page {
+  background: var(--background);
+  color: var(--text);
+}
+
+.settings-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.settings-header p,
+.settings-card-header p,
+.setting-row p {
+  color: var(--muted);
+}
+
+.settings-select {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
