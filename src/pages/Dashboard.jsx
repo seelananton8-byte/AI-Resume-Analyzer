@@ -96,14 +96,14 @@ function Dashboard() {
             <Bell size={20} />
           </button>
 
-          <div className="user-avatar">U</div>
+          <div className="user-avatar">AS</div>
         </header>
 
         {/* Welcome */}
         <section className="dashboard-welcome">
           <div>
             <p className="welcome-date">YOUR PERSONAL DASHBOARD</p>
-            <h1>Welcome back, User! 👋</h1>
+            <h1>Welcome back, AntonSeelan!</h1>
             <p>
               Here's an overview of your resume performance
               and career progress.
