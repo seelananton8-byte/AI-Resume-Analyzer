@@ -5,14 +5,14 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
 
   const [profile, setProfile] = useState({
-    fullName: "Anto Sureshkumar",
+    fullName: "Anton Sureshkumar",
     email: "anto@example.com",
     phone: "",
     location: "Tamil Nadu, India",
-    jobTitle: "Frontend Developer",
-    experience: "Fresher",
+    jobTitle: "Full Stack Developer",
+    experience: "0-1 Years",
     education: "B.Sc Chemistry",
-    skills: "React, JavaScript, HTML, CSS, Node.js",
+    skills: "React, JavaScript, HTML, CSS, Node.js, Express, MongoDB",
     bio: "Aspiring software developer passionate about building modern web applications and learning new technologies.",
   });
 
