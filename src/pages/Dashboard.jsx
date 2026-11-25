@@ -6,6 +6,9 @@ import {
   Target,
   ArrowUpRight,
   ChevronRight,
+  Lightbulb,
+  CheckCircle2,
+  ArrowRight,
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +24,27 @@ const scoreBreakdown = [
   { label: "ATS Compatibility", value: 90 },
   { label: "Skills Match", value: 78 },
   { label: "Content Quality", value: 86 },
+];
+
+const suggestions = [
+  {
+    id: 1,
+    title: "Add measurable achievements",
+    description:
+      "Include numbers and results to demonstrate your professional impact.",
+  },
+  {
+    id: 2,
+    title: "Improve keyword optimization",
+    description:
+      "Include relevant skills and keywords from your target job description.",
+  },
+  {
+    id: 3,
+    title: "Strengthen work experience",
+    description:
+      "Use clear action verbs to explain your responsibilities and achievements.",
+  },
 ];
 
 function Dashboard() {
@@ -51,10 +75,8 @@ function Dashboard() {
           <div className="stat-icon purple-bg">
             <FileText size={21} />
           </div>
-
           <p>Total Resumes Analyzed</p>
           <h2>12</h2>
-
           <span className="stat-trend">
             <TrendingUp size={15} />
             +3 this month
@@ -65,12 +87,8 @@ function Dashboard() {
           <div className="stat-icon blue-bg">
             <Target size={21} />
           </div>
-
           <p>Average Resume Score</p>
-          <h2>
-            78<span>/100</span>
-          </h2>
-
+          <h2>78<span>/100</span></h2>
           <span className="stat-trend">
             <TrendingUp size={15} />
             +8% improvement
@@ -81,13 +99,76 @@ function Dashboard() {
           <div className="stat-icon green-bg">
             <Sparkles size={21} />
           </div>
-
           <p>Best Resume Score</p>
-          <h2>
-            92<span>/100</span>
-          </h2>
+          <h2>92<span>/100</span></h2>
+          <span className="stat-trend">
+            Excellent performance
+          </span>
+        </div>
+      </section>
 
-          <span className="stat-trend">Excellent performance</span>
+      {/* Profile Strength and AI Suggestions */}
+      <section className="dashboard-insights-grid">
+        <div className="profile-strength-card">
+          <div className="insight-card-heading">
+            <div>
+              <span className="insight-eyebrow">
+                <Sparkles size={14} /> YOUR PROGRESS
+              </span>
+              <h3>Profile Strength</h3>
+            </div>
+
+            <div className="strength-icon">
+              <Target size={22} />
+            </div>
+          </div>
+
+          <div className="strength-score">
+            <strong>85%</strong>
+            <span>Strong profile</span>
+          </div>
+
+          <div className="strength-progress">
+            <span style={{ width: "85%" }} />
+          </div>
+
+          <p>
+            Your resume profile is looking good. A few improvements
+            can make it even stronger.
+          </p>
+
+          <Link to="/analyze" className="strength-link">
+            Improve your resume <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <div className="dashboard-panel ai-suggestions-card">
+          <div className="panel-heading">
+            <div>
+              <span className="suggestion-eyebrow">
+                <Lightbulb size={14} /> SMART INSIGHTS
+              </span>
+              <h3>AI Suggestions</h3>
+              <p>Ideas to improve your resume</p>
+            </div>
+          </div>
+
+          <div className="suggestion-list">
+            {suggestions.map((item) => (
+              <div className="suggestion-item" key={item.id}>
+                <CheckCircle2 size={18} />
+                <div>
+                  <h4>{item.title}</h4>
+                  <p>{item.description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Link to="/analyze" className="suggestion-link">
+            Analyze resume for more insights
+            <ChevronRight size={16} />
+          </Link>
         </div>
       </section>
 
@@ -143,7 +224,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Quick action */}
         <div className="dashboard-panel quick-panel">
           <div className="quick-panel-icon">
             <Sparkles size={24} />
@@ -205,7 +285,9 @@ function Dashboard() {
                   <td>{item.date}</td>
 
                   <td>
-                    <strong className="table-score">{item.score}/100</strong>
+                    <strong className="table-score">
+                      {item.score}/100
+                    </strong>
                   </td>
 
                   <td>
