@@ -386,3 +386,26 @@
     font-size: 27px;
   }
 }
+
+.selected-file .file-icon {
+  color: var(--primary);
+}
+
+.remove-file {
+  display: grid;
+  place-items: center;
+}
+
+.analyze-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.upload-privacy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

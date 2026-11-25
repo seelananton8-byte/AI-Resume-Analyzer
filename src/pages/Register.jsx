@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "../hooks/useToast";
 import "../styles/register.css";
 
 function Register() {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -58,8 +60,7 @@ function Register() {
     }
 
     // Frontend-only temporary action
-    alert("Registration form validated successfully!");
-
+    toast.success("Account created! Please sign in.");
     navigate("/login");
   };
 
@@ -118,6 +119,7 @@ function Register() {
                 type="text"
                 id="fullName"
                 name="fullName"
+                autoComplete="name"
                 placeholder="Enter your full name"
                 value={formData.fullName}
                 onChange={handleChange}
@@ -132,6 +134,7 @@ function Register() {
                 type="email"
                 id="email"
                 name="email"
+                autoComplete="email"
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange}
@@ -147,6 +150,7 @@ function Register() {
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
+                  autoComplete="new-password"
                   placeholder="Create a strong password"
                   value={formData.password}
                   onChange={handleChange}
@@ -175,6 +179,7 @@ function Register() {
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
+                  autoComplete="new-password"
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -202,9 +207,11 @@ function Register() {
               />
 
               <label htmlFor="terms">
-                I agree to the <a href="#">Terms & Conditions</a> and{" "}
-                <a href="#">Privacy Policy</a>
-              </label>
+                I agree to the{" "}
+                <Link to="/terms" target="_blank" rel="noreferrer">Terms & Conditions</Link>{" "}
+                and{" "}
+                <Link to="/privacy" target="_blank" rel="noreferrer">Privacy Policy</Link>
+                </label>
             </div>
 
             {/* Error */}

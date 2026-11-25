@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useToast } from "../hooks/useToast";
 import "../styles/profile.css";
 
 function Profile() {
+  const toast = useToast();
   const [isEditing, setIsEditing] = useState(false);
 
   const [profile, setProfile] = useState({
@@ -23,9 +25,9 @@ function Profile() {
     });
   };
 
-  const handleSave = () => {
+    const handleSave = () => {
     setIsEditing(false);
-    alert("Profile updated successfully!");
+    toast.success("Profile updated successfully!");
   };
 
   const handleCancel = () => {

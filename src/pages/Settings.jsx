@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useToast } from "../hooks/useToast";
 import "../styles/settings.css";
 
 function Settings() {
+  const toast = useToast();
   const [notifications, setNotifications] = useState({
     email: true,
     analysis: true,
@@ -49,16 +51,21 @@ function Settings() {
     });
   };
 
-  const handleSave = () => {
-    if (
-      passwords.new &&
-      passwords.new !== passwords.confirm
-    ) {
-      alert("New passwords do not match!");
-      return;
+    const handleSave = () => {
+    if (passwords.new || passwords.confirm) {
+      if (!passwords.current) {
+        return toast.error("Please enter your current password.");
+      }
+      if (passwords.new.length < 8) {
+        return toast.error("New password must be at least 8 characters.");
+      }
+      if (passwords.new !== passwords.confirm) {
+        return toast.error("New passwords do not match.");
+      }
     }
 
-    alert("Settings saved successfully!");
+    setPasswords({ current: "", new: "", confirm: "" });
+    toast.success("Settings saved successfully!");
   };
 
   return (

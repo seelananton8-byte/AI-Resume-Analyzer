@@ -273,3 +273,28 @@
   color: var(--text);
   border: 1px solid var(--border);
 }
+
+.settings-card-header,
+.setting-row {
+  border-color: var(--border);
+}
+
+.settings-card-header h2,
+.setting-row h3,
+.password-field label {
+  color: var(--text);
+}
+
+.password-field input {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .toggle-slider {
+  background: #3d3a52;
+}
+
+[data-theme="dark"] .toggle-switch input:checked + .toggle-slider {
+  background: var(--primary);
+}

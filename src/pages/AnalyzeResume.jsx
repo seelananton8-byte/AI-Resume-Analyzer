@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FileText, X, Sparkles, Lock } from "lucide-react";
 import "../styles/analyze-resume.css";
 
 function AnalyzeResume() {
@@ -68,7 +69,7 @@ function AnalyzeResume() {
     setError("");
   };
 
-  const handleAnalyze = () => {
+    const handleAnalyze = () => {
     if (!file) {
       setError("Please upload your resume first.");
       return;
@@ -76,12 +77,9 @@ function AnalyzeResume() {
 
     setIsAnalyzing(true);
 
-    // Frontend demonstration only
+    // Frontend demo only, replaced by API call after backend integration
     setTimeout(() => {
       setIsAnalyzing(false);
-      alert(
-        "Resume uploaded successfully! AI analysis will be available after backend integration."
-      );
       navigate("/results");
     }, 1500);
   };
@@ -160,7 +158,7 @@ function AnalyzeResume() {
               </>
             ) : (
               <div className="selected-file">
-                <div className="file-icon">📄</div>
+                <div className="file-icon"><FileText size={28} /></div>
 
                 <div className="file-details">
                   <h3>{file.name}</h3>
@@ -174,7 +172,7 @@ function AnalyzeResume() {
                   onClick={removeFile}
                   title="Remove file"
                 >
-                  ✕
+                  <X size={18} />
                 </button>
               </div>
             )}
@@ -203,13 +201,15 @@ function AnalyzeResume() {
               </>
             ) : (
               <>
-                ✨ Analyze Resume
+                <Sparkles size={18} />
+                Analyze Resume
               </>
             )}
           </button>
 
           <div className="upload-privacy">
-            🔒 Your resume and personal information are kept private.
+            <Lock size={14} />
+            Your resume and personal information are kept private.
           </div>
         </div>
 
