@@ -181,7 +181,7 @@
   color: #6c5ce7;
 }
 
-.score-circle {
+.hero-score-circle {
   width: 145px;
   height: 145px;
   border-radius: 50%;
@@ -195,17 +195,17 @@
   transform: rotate(30deg);
 }
 
-.score-circle div {
+.hero-score-circle div {
   transform: rotate(-30deg);
   text-align: center;
 }
 
-.score-circle strong {
+.hero-score-circle strong {
   font-size: 42px;
   color: var(--text, #252535);
 }
 
-.score-circle span {
+.hero-score-circle span {
   color: var(--muted, #89889c);
   font-size: 14px;
 }
@@ -271,19 +271,19 @@
   box-shadow: 0 12px 35px #34305b15;
 }
 
-.upload-icon {
+.hero-float-upload {
   top: 10%;
   left: 0;
   color: #6c5ce7;
 }
 
-.target-icon {
+.hero-float-target {
   bottom: 15%;
   right: 0;
   color: #16a085;
 }
 
-.file-icon {
+.hero-float-file {
   top: 42%;
   right: -25px;
   color: #3984e8;
@@ -404,11 +404,11 @@
 }
 
 [data-theme="dark"] .card-header h3,
-[data-theme="dark"] .score-circle strong {
+[data-theme="dark"] .hero-score-circle strong {
   color: var(--text);
 }
 
-[data-theme="dark"] .score-circle {
+[data-theme="dark"] .hero-score-circle {
   border-color: #39334f;
   border-top-color: #6c5ce7;
   border-right-color: #6c5ce7;
@@ -507,7 +507,7 @@
     font-size: 27px;
   }
 
-  .file-icon {
-    right: 0;
+  .floating-icon {
+    display: none;
   }
 }

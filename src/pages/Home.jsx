@@ -64,7 +64,7 @@ function Home() {
               <Sparkles className="sparkle-icon" />
             </div>
 
-            <div className="score-circle">
+            <div className="hero-score-circle">
               <div>
                 <strong>85</strong>
                 <span>/100</span>
@@ -111,15 +111,15 @@ function Home() {
             </div>
           </div>
 
-          <div className="floating-icon upload-icon">
+          <div className="floating-icon hero-float-upload">
             <Upload size={22} />
           </div>
 
-          <div className="floating-icon target-icon">
+          <div className="floating-icon hero-float-target">
             <Target size={22} />
           </div>
 
-          <div className="floating-icon file-icon">
+          <div className="floating-icon hero-float-file">
             <FileCheck size={22} />
           </div>
         </div>
