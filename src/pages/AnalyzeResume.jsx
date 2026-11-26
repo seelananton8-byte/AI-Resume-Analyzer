@@ -1,11 +1,17 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, X, Sparkles, Lock } from "lucide-react";
+import { useToast } from "../hooks/useToast";
+import { uploadResume } from "../services/resumeService";
+import { analyzeResume } from "../services/analysisService";
+import { getErrorMessage } from "../services/api";
 import "../styles/analyze-resume.css";
 
 function AnalyzeResume() {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const toast = useToast();
+  const uploadedRef = useRef(null);
 
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
@@ -69,19 +75,30 @@ function AnalyzeResume() {
     setError("");
   };
 
-    const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!file) {
       setError("Please upload your resume first.");
       return;
     }
 
+    setError("");
     setIsAnalyzing(true);
 
-    // Frontend demo only, replaced by API call after backend integration
-    setTimeout(() => {
+    try {
+      // Upload once per file, so retrying after an AI error doesn't save duplicates
+      if (uploadedRef.current?.file !== file) {
+        const resume = await uploadResume(file);
+        uploadedRef.current = { file, id: resume.id };
+      }
+
+      const analysis = await analyzeResume(uploadedRef.current.id);
+      toast.success("Analysis complete!");
+      navigate(`/results/${analysis.id}`);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
       setIsAnalyzing(false);
-      navigate("/results");
-    }, 1500);
+    }
   };
 
   const formatFileSize = (bytes) => {

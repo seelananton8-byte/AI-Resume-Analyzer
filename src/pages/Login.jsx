@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   Eye,
   EyeOff,
@@ -7,6 +7,8 @@ import {
   Lock,
   Sparkles,
 } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { getErrorMessage } from "../services/api";
 import "../styles/login.css";
 
 function Login() {
@@ -17,8 +19,11 @@ function Login() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -32,8 +37,17 @@ function Login() {
       return;
     }
 
-    // Temporary frontend-only login
-    navigate("/dashboard");
+    setIsLoading(true);
+    try {
+      await login(email.trim(), password);
+      navigate(location.state?.from?.pathname || "/dashboard", {
+        replace: true,
+      });
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -193,8 +207,9 @@ function Login() {
               <button
                 type="submit"
                 className="login-submit-btn"
+                disabled={isLoading}
               >
-                Sign In
+                {isLoading ? "Signing in..." : "Sign In"}
               </button>
 
             </form>

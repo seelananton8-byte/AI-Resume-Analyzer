@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/useToast";
+import { useAuth } from "../hooks/useAuth";
+import { getErrorMessage } from "../services/api";
 import "../styles/register.css";
 
 function Register() {
   const navigate = useNavigate();
   const toast = useToast();
+
+  const { register } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -28,7 +33,7 @@ function Register() {
     setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const { fullName, email, password, confirmPassword } = formData;
@@ -60,8 +65,16 @@ function Register() {
     }
 
     // Frontend-only temporary action
-    toast.success("Account created! Please sign in.");
-    navigate("/login");
+        setIsLoading(true);
+    try {
+      await register(fullName.trim(), email.trim(), password);
+      toast.success("Account created! Welcome to ResumeAI.");
+      navigate("/dashboard");
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -218,8 +231,12 @@ function Register() {
             {error && <div className="register-error">{error}</div>}
 
             {/* Submit */}
-            <button type="submit" className="register-submit">
-              Create Account
+            <button
+              type="submit"
+              className="register-submit"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating account..." : "Create Account"}
             </button>
           </form>
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   FileText,
   Upload,
@@ -6,49 +7,76 @@ import {
   Target,
   ArrowUpRight,
   ChevronRight,
-  Lightbulb,
-  CheckCircle2,
-  ArrowRight,
 } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { listAnalyses } from "../services/analysisService";
+import { getErrorMessage } from "../services/api";
+import { formatDate, scoreLabel, truncate } from "../utils/format";
 import "../styles/dashboard.css";
 
-const recentAnalyses = [
-  { id: 1, file: "Software_Developer.pdf", date: "Nov 18, 2026", score: 85 },
-  { id: 2, file: "Frontend_Developer.pdf", date: "Nov 15, 2026", score: 78 },
-  { id: 3, file: "My_Resume_v1.pdf", date: "Nov 10, 2026", score: 65 },
-];
+function countThisMonth(analyses) {
+  const now = new Date();
 
-const scoreBreakdown = [
-  { label: "ATS Compatibility", value: 90 },
-  { label: "Skills Match", value: 78 },
-  { label: "Content Quality", value: 86 },
-];
-
-const suggestions = [
-  {
-    id: 1,
-    title: "Add measurable achievements",
-    description:
-      "Include numbers and results to demonstrate your professional impact.",
-  },
-  {
-    id: 2,
-    title: "Improve keyword optimization",
-    description:
-      "Include relevant skills and keywords from your target job description.",
-  },
-  {
-    id: 3,
-    title: "Strengthen work experience",
-    description:
-      "Use clear action verbs to explain your responsibilities and achievements.",
-  },
-];
+  return analyses.filter((a) => {
+    const date = new Date(a.createdAt);
+    return (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    );
+  }).length;
+}
 
 function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const [analyses, setAnalyses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [thisMonth, setThisMonth] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+
+    listAnalyses()
+      .then((data) => {
+        if (active) {
+          setAnalyses(data);
+          setThisMonth(countThisMonth(data));
+        }
+      })
+      .catch((err) => {
+        if (active) setError(getErrorMessage(err));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // The API returns the newest analysis first
+  const total = analyses.length;
+  const latest = analyses[0] || null;
+  const recent = analyses.slice(0, 3);
+
+  const average = total
+    ? Math.round(analyses.reduce((sum, a) => sum + a.overallScore, 0) / total)
+    : 0;
+  const best = total ? Math.max(...analyses.map((a) => a.overallScore)) : 0;
+
+
+  const breakdown = latest
+    ? [
+        { label: "ATS Compatibility", value: latest.scores.atsCompatibility },
+        { label: "Skills Match", value: latest.scores.skillsMatch },
+        { label: "Content Quality", value: latest.scores.contentQuality },
+      ]
+    : [];
 
   return (
     <>
@@ -56,7 +84,7 @@ function Dashboard() {
       <section className="dashboard-welcome">
         <div>
           <p className="welcome-date">YOUR PERSONAL DASHBOARD</p>
-          <h1>Welcome back, AntonSeelan!</h1>
+          <h1>Welcome back, {user.name.split(" ")[0]}!</h1>
           <p>
             Here's an overview of your resume performance
             and career progress.
@@ -69,17 +97,20 @@ function Dashboard() {
         </Link>
       </section>
 
+      {error && <p className="dashboard-error">{error}</p>}
+
       {/* Statistics */}
       <section className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon purple-bg">
             <FileText size={21} />
           </div>
+
           <p>Total Resumes Analyzed</p>
-          <h2>12</h2>
+          <h2>{total}</h2>
+
           <span className="stat-trend">
-            <TrendingUp size={15} />
-            +3 this month
+            <TrendingUp size={15} />+{thisMonth} this month
           </span>
         </div>
 
@@ -87,11 +118,15 @@ function Dashboard() {
           <div className="stat-icon blue-bg">
             <Target size={21} />
           </div>
+
           <p>Average Resume Score</p>
-          <h2>78<span>/100</span></h2>
+          <h2>
+            {total ? average : "–"}
+            {total > 0 && <span>/100</span>}
+          </h2>
+
           <span className="stat-trend">
-            <TrendingUp size={15} />
-            +8% improvement
+            {total ? "Across all analyses" : "No analyses yet"}
           </span>
         </div>
 
@@ -99,76 +134,16 @@ function Dashboard() {
           <div className="stat-icon green-bg">
             <Sparkles size={21} />
           </div>
+
           <p>Best Resume Score</p>
-          <h2>92<span>/100</span></h2>
+          <h2>
+            {total ? best : "–"}
+            {total > 0 && <span>/100</span>}
+          </h2>
+
           <span className="stat-trend">
-            Excellent performance
+            {total ? scoreLabel(best) : "Analyze a resume to start"}
           </span>
-        </div>
-      </section>
-
-      {/* Profile Strength and AI Suggestions */}
-      <section className="dashboard-insights-grid">
-        <div className="profile-strength-card">
-          <div className="insight-card-heading">
-            <div>
-              <span className="insight-eyebrow">
-                <Sparkles size={14} /> YOUR PROGRESS
-              </span>
-              <h3>Profile Strength</h3>
-            </div>
-
-            <div className="strength-icon">
-              <Target size={22} />
-            </div>
-          </div>
-
-          <div className="strength-score">
-            <strong>85%</strong>
-            <span>Strong profile</span>
-          </div>
-
-          <div className="strength-progress">
-            <span style={{ width: "85%" }} />
-          </div>
-
-          <p>
-            Your resume profile is looking good. A few improvements
-            can make it even stronger.
-          </p>
-
-          <Link to="/analyze" className="strength-link">
-            Improve your resume <ArrowRight size={16} />
-          </Link>
-        </div>
-
-        <div className="dashboard-panel ai-suggestions-card">
-          <div className="panel-heading">
-            <div>
-              <span className="suggestion-eyebrow">
-                <Lightbulb size={14} /> SMART INSIGHTS
-              </span>
-              <h3>AI Suggestions</h3>
-              <p>Ideas to improve your resume</p>
-            </div>
-          </div>
-
-          <div className="suggestion-list">
-            {suggestions.map((item) => (
-              <div className="suggestion-item" key={item.id}>
-                <CheckCircle2 size={18} />
-                <div>
-                  <h4>{item.title}</h4>
-                  <p>{item.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <Link to="/analyze" className="suggestion-link">
-            Analyze resume for more insights
-            <ChevronRight size={16} />
-          </Link>
         </div>
       </section>
 
@@ -181,49 +156,70 @@ function Dashboard() {
               <p>Your latest resume analysis</p>
             </div>
 
-            <button
-              className="icon-action"
-              aria-label="View latest report"
-              onClick={() => navigate("/results")}
-            >
-              <ArrowUpRight size={19} />
-            </button>
+            {latest && (
+              <button
+                className="icon-action"
+                aria-label="View latest report"
+                onClick={() => navigate(`/results/${latest.id}`)}
+              >
+                <ArrowUpRight size={19} />
+              </button>
+            )}
           </div>
 
-          <div className="dashboard-score">
-            <div className="dashboard-score-circle">
-              <div>
-                <strong>85</strong>
-                <span>/100</span>
-              </div>
-            </div>
-
-            <div className="score-description">
-              <span className="score-status">Excellent</span>
-              <h3>Your resume is looking strong!</h3>
-              <p>
-                A few improvements can make your resume
-                even more competitive.
+          {loading ? (
+            <p className="dashboard-empty-note">Loading...</p>
+          ) : !latest ? (
+            <div>
+              <p className="dashboard-empty-note">
+                No analysis yet. Upload a resume to see your score here.
               </p>
+              <Link to="/analyze" className="quick-upload-btn">
+                <Upload size={18} />
+                Analyze Resume
+              </Link>
             </div>
-          </div>
-
-          <div className="score-breakdown">
-            {scoreBreakdown.map((item) => (
-              <div className="breakdown-item" key={item.label}>
-                <div>
-                  <span>{item.label}</span>
-                  <strong>{item.value}%</strong>
+          ) : (
+            <>
+              <div className="dashboard-score">
+                <div
+                  className="dashboard-score-circle"
+                  style={{ "--score": latest.overallScore }}
+                >
+                  <div>
+                    <strong>{latest.overallScore}</strong>
+                    <span>/100</span>
+                  </div>
                 </div>
 
-                <div className="breakdown-bar">
-                  <span style={{ width: `${item.value}%` }} />
+                <div className="score-description">
+                  <span className="score-status">
+                    {scoreLabel(latest.overallScore)}
+                  </span>
+                  <h3>{latest.fileName}</h3>
+                  <p>{truncate(latest.summary, 150)}</p>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="score-breakdown">
+                {breakdown.map((item) => (
+                  <div className="breakdown-item" key={item.label}>
+                    <div>
+                      <span>{item.label}</span>
+                      <strong>{item.value}%</strong>
+                    </div>
+
+                    <div className="breakdown-bar">
+                      <span style={{ width: `${item.value}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
+        {/* Quick action */}
         <div className="dashboard-panel quick-panel">
           <div className="quick-panel-icon">
             <Sparkles size={24} />
@@ -273,37 +269,45 @@ function Dashboard() {
             </thead>
 
             <tbody>
-              {recentAnalyses.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <div className="resume-file">
-                      <FileText size={18} />
-                      <span>{item.file}</span>
-                    </div>
-                  </td>
-
-                  <td>{item.date}</td>
-
-                  <td>
-                    <strong className="table-score">
-                      {item.score}/100
-                    </strong>
-                  </td>
-
-                  <td>
-                    <span className="status-badge">Completed</span>
-                  </td>
-
-                  <td>
-                    <button
-                      className="table-action"
-                      onClick={() => navigate("/results")}
-                    >
-                      View Report
-                    </button>
+              {recent.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="table-empty">
+                    {loading ? "Loading..." : "No analyses yet."}
                   </td>
                 </tr>
-              ))}
+              ) : (
+                recent.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div className="resume-file">
+                        <FileText size={18} />
+                        <span>{item.fileName}</span>
+                      </div>
+                    </td>
+
+                    <td>{formatDate(item.createdAt)}</td>
+
+                    <td>
+                      <strong className="table-score">
+                        {item.overallScore}/100
+                      </strong>
+                    </td>
+
+                    <td>
+                      <span className="status-badge">Completed</span>
+                    </td>
+
+                    <td>
+                      <button
+                        className="table-action"
+                        onClick={() => navigate(`/results/${item.id}`)}
+                      >
+                        View Report
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -9,9 +9,12 @@ import Results from "./pages/Results";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import DashboardLayout from "./components/DashboardLayout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import GuestRoute from "./components/GuestRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import Legal from "./pages/Legal";
 import { ToastProvider } from "./context/ToastContext";
+import { AuthProvider } from "./context/AuthContext";
 
 function NotFound() {
   return (
@@ -40,29 +43,38 @@ function NotFound() {
 function App() {
   return (
     <ToastProvider>
-    <BrowserRouter>
-      <Routes>
-        {/* Public pages */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/terms" element={<Legal type="terms" />} />
-        <Route path="/privacy" element={<Legal type="privacy" />} />
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public pages */}
+            <Route path="/" element={<Home />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/terms" element={<Legal type="terms" />} />
+            <Route path="/privacy" element={<Legal type="privacy" />} />
 
-        {/* Logged-in pages share the sidebar layout */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/analyze" element={<AnalyzeResume />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/settings" element={<Settings />} />
-        </Route>
+            {/* Only for logged-out users */}
+            <Route element={<GuestRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Route>
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </BrowserRouter>
+            {/* Only for logged-in users */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<DashboardLayout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/analyze" element={<AnalyzeResume />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/results" element={<Results />} />
+                <Route path="/results/:id" element={<Results />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/settings" element={<Settings />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </ToastProvider>
   );
 }

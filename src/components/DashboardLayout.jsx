@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import "../styles/dashboard.css";
 
 const linkClass = ({ isActive }) =>
@@ -22,12 +23,21 @@ const linkClass = ({ isActive }) =>
 
 function DashboardLayout() {
   const navigate = useNavigate();
+
+  const { user, logout } = useAuth();
+  const initials = user.name
+    .split(" ")
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const closeMobileMenu = () => setMobileMenuOpen(false);
 
-  const handleLogout = () => {
-    setMobileMenuOpen(false);
+    const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 
@@ -179,7 +189,7 @@ function DashboardLayout() {
             className="user-avatar"
             aria-label="Profile"
           >
-            AS
+            {initials}
           </Link>
         </header>
 

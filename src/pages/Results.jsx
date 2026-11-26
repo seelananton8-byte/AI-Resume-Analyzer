@@ -1,47 +1,92 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { getAnalysis } from "../services/analysisService";
+import { getErrorMessage } from "../services/api";
 import "../styles/results.css";
 
+function scoreLabel(score) {
+  if (score >= 85) return "Excellent";
+  if (score >= 70) return "Good Performance";
+  if (score >= 50) return "Needs Improvement";
+  return "Needs Work";
+}
+
+function atsText(score) {
+  if (score >= 80) return "Your resume is ATS-friendly";
+  if (score >= 60) return "Some ATS improvements are needed";
+  return "Your resume may be filtered out by ATS";
+}
+
+function skillsText(score) {
+  if (score >= 80) return "Your skills match the target profile well";
+  if (score >= 60) return "Some expected skills are missing";
+  return "Many expected skills are missing";
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 function Results() {
-  const skills = [
-    { name: "React.js", score: 90 },
-    { name: "JavaScript", score: 85 },
-    { name: "CSS", score: 78 },
-    { name: "Node.js", score: 65 },
-    { name: "MongoDB", score: 55 },
-  ];
+  const { id } = useParams();
+  const [analysis, setAnalysis] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(Boolean(id));
 
-  const strengths = [
-    "Strong technical skills section",
-    "Good project experience",
-    "Clear resume structure",
-    "Relevant technology stack",
-  ];
+  useEffect(() => {
+    if (!id) return;
 
-  const weaknesses = [
-    "Missing measurable achievements",
-    "Limited professional experience details",
-    "Some keywords are missing",
-  ];
+    let active = true;
 
-  const suggestions = [
-    {
-      number: "01",
-      title: "Add measurable achievements",
-      description:
-        "Include measurable results in your projects and experience. Use numbers to demonstrate your impact.",
-    },
-    {
-      number: "02",
-      title: "Improve keyword optimization",
-      description:
-        "Add relevant industry keywords and technical skills to improve ATS compatibility.",
-    },
-    {
-      number: "03",
-      title: "Strengthen project descriptions",
-      description:
-        "Explain the technologies used, your role, and the problems you solved in each project.",
-    },
+    getAnalysis(id)
+      .then((data) => {
+        if (active) setAnalysis(data);
+      })
+      .catch((err) => {
+        if (active) setError(getErrorMessage(err));
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="results-page">
+        <div className="results-panel results-state">Loading analysis...</div>
+      </div>
+    );
+  }
+
+  if (!analysis) {
+    return (
+      <div className="results-page">
+        <div className="results-panel results-state">
+          <p>{error || "No analysis selected."}</p>
+          <Link to="/analyze" className="improve-button">
+            Analyze a Resume
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const { scores, strengths, weaknesses, missingKeywords, suggestions } =
+    analysis;
+
+  const breakdown = [
+    { label: "Overall", value: analysis.overallScore },
+    { label: "ATS Compatibility", value: scores.atsCompatibility },
+    { label: "Skills Match", value: scores.skillsMatch },
+    { label: "Content Quality", value: scores.contentQuality },
   ];
 
   return (
@@ -55,10 +100,11 @@ function Results() {
 
           <h1>Resume Analysis Results</h1>
 
-          <p>
-            Here's your resume performance overview and personalized
-            recommendations.
-          </p>
+          <span className="results-file">
+            {analysis.fileName} · {formatDate(analysis.createdAt)}
+          </span>
+
+          <p>{analysis.summary}</p>
         </div>
 
         <Link to="/analyze" className="reanalyze-button">
@@ -68,7 +114,6 @@ function Results() {
 
       {/* Score Cards */}
       <div className="results-stats">
-        {/* Overall Score */}
         <div className="result-stat-card overall-card">
           <div className="stat-card-top">
             <span>Overall Resume Score</span>
@@ -76,21 +121,27 @@ function Results() {
           </div>
 
           <div className="score-content">
-            <div className="score-circle">
+            <div
+              className="score-circle"
+              style={{
+                background: `conic-gradient(#6c5ce7 0% ${analysis.overallScore}%, #eeebff ${analysis.overallScore}% 100%)`,
+              }}
+            >
               <div className="score-circle-inner">
-                <strong>78</strong>
+                <strong>{analysis.overallScore}</strong>
                 <span>/100</span>
               </div>
             </div>
 
             <div className="score-info">
-              <span className="score-status">Good Performance</span>
-              <p>Your resume is performing well!</p>
+              <span className="score-status">
+                {scoreLabel(analysis.overallScore)}
+              </span>
+              <p>Based on AI review of your resume</p>
             </div>
           </div>
         </div>
 
-        {/* ATS Score */}
         <div className="result-stat-card">
           <div className="stat-card-top">
             <span>ATS Compatibility</span>
@@ -98,22 +149,20 @@ function Results() {
           </div>
 
           <div className="stat-number">
-            82<span>/100</span>
+            {scores.atsCompatibility}
+            <span>/100</span>
           </div>
 
           <div className="stat-progress">
             <div
               className="stat-progress-fill ats-fill"
-              style={{ width: "82%" }}
+              style={{ width: `${scores.atsCompatibility}%` }}
             ></div>
           </div>
 
-          <p className="stat-description">
-            Your resume is ATS-friendly
-          </p>
+          <p className="stat-description">{atsText(scores.atsCompatibility)}</p>
         </div>
 
-        {/* Skills */}
         <div className="result-stat-card">
           <div className="stat-card-top">
             <span>Skills Match</span>
@@ -121,22 +170,20 @@ function Results() {
           </div>
 
           <div className="stat-number">
-            74<span>%</span>
+            {scores.skillsMatch}
+            <span>%</span>
           </div>
 
           <div className="stat-progress">
             <div
               className="stat-progress-fill skills-fill"
-              style={{ width: "74%" }}
+              style={{ width: `${scores.skillsMatch}%` }}
             ></div>
           </div>
 
-          <p className="stat-description">
-            Your skills match the target profile
-          </p>
+          <p className="stat-description">{skillsText(scores.skillsMatch)}</p>
         </div>
 
-        {/* Improvement */}
         <div className="result-stat-card">
           <div className="stat-card-top">
             <span>Improvement Areas</span>
@@ -144,7 +191,8 @@ function Results() {
           </div>
 
           <div className="stat-number">
-            03<span> areas</span>
+            {String(weaknesses.length).padStart(2, "0")}
+            <span> areas</span>
           </div>
 
           <p className="stat-description">
@@ -153,85 +201,47 @@ function Results() {
         </div>
       </div>
 
-      {/* Main Analysis */}
+      {/* Keywords + Breakdown */}
       <div className="results-main-grid">
-        {/* Skills Analysis */}
         <div className="results-panel">
           <div className="panel-heading">
             <div>
-              <h2>Skills Analysis</h2>
-              <p>Your technical skills performance</p>
+              <h2>Missing Keywords</h2>
+              <p>Skills recruiters may expect for this role</p>
             </div>
           </div>
 
-          <div className="skills-list">
-            {skills.map((skill, index) => (
-              <div className="skill-row" key={index}>
-                <div className="skill-info">
-                  <span>{skill.name}</span>
-                  <strong>{skill.score}%</strong>
-                </div>
-
-                <div className="skill-progress">
-                  <div
-                    className="skill-progress-fill"
-                    style={{ width: `${skill.score}%` }}
-                  ></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {missingKeywords.length > 0 ? (
+            <div className="keyword-list">
+              {missingKeywords.map((keyword) => (
+                <span className="keyword-chip" key={keyword}>
+                  {keyword}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="results-empty">No major keywords are missing.</p>
+          )}
         </div>
 
-        {/* Resume Breakdown */}
         <div className="results-panel">
           <div className="panel-heading">
             <div>
               <h2>Resume Score Breakdown</h2>
-              <p>Performance across key sections</p>
+              <p>Performance across key areas</p>
             </div>
           </div>
 
           <div className="breakdown-list">
-            <div className="breakdown-item">
-              <span>Formatting</span>
-              <div className="breakdown-bar">
-                <div style={{ width: "90%" }}></div>
+            {breakdown.map((item) => (
+              <div className="breakdown-item" key={item.label}>
+                <span>{item.label}</span>
+                <div className="breakdown-bar">
+                  <div style={{ width: `${item.value}%` }}></div>
+                </div>
+                <strong>{item.value}</strong>
               </div>
-              <strong>90</strong>
-            </div>
-
-            <div className="breakdown-item">
-              <span>Skills</span>
-              <div className="breakdown-bar">
-                <div style={{ width: "78%" }}></div>
-              </div>
-              <strong>78</strong>
-            </div>
-
-            <div className="breakdown-item">
-              <span>Experience</span>
-              <div className="breakdown-bar">
-                <div style={{ width: "68%" }}></div>
-              </div>
-              <strong>68</strong>
-            </div>
-
-            <div className="breakdown-item">
-              <span>Education</span>
-              <div className="breakdown-bar">
-                <div style={{ width: "85%" }}></div>
-              </div>
-              <strong>85</strong>
-            </div>
-
-            <div className="breakdown-item">
-              <span>Keywords</span>
-              <div className="breakdown-bar">
-                <div style={{ width: "72%" }}></div>
-              </div>
-              <strong>72</strong>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -286,18 +296,22 @@ function Results() {
         </div>
 
         <div className="suggestions-list">
-          {suggestions.map((suggestion) => (
-            <div
-              className="suggestion-item"
-              key={suggestion.number}
-            >
+          {suggestions.map((suggestion, index) => (
+            <div className="suggestion-item" key={index}>
               <div className="suggestion-number">
-                {suggestion.number}
+                {String(index + 1).padStart(2, "0")}
               </div>
 
               <div className="suggestion-content">
-                <h3>{suggestion.title}</h3>
-                <p>{suggestion.description}</p>
+                <h3>
+                  {suggestion.title}
+                  <span
+                    className={`priority-tag priority-${suggestion.priority}`}
+                  >
+                    {suggestion.priority}
+                  </span>
+                </h3>
+                <p>{suggestion.detail}</p>
               </div>
             </div>
           ))}

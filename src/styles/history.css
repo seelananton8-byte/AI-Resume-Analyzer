@@ -348,3 +348,40 @@
     padding: 20px;
   }
 }
+
+.history-actions {
+  white-space: nowrap;
+}
+
+.history-delete-button {
+  margin-left: 8px;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 7px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.history-delete-button:hover {
+  background: rgba(239, 68, 68, 0.18);
+}
+
+.history-delete-button.confirm {
+  background: #ef4444;
+  color: #fff;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.history-empty p {
+  margin-bottom: 16px;
+}

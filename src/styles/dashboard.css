@@ -1271,3 +1271,47 @@
     font-size: 11px;
   }
 }
+
+.dashboard-score-circle {
+  border: none;
+  transform: none;
+  position: relative;
+  background: conic-gradient(
+    #6c5ce7 calc(var(--score, 0) * 1%),
+    #eeebff 0
+  );
+}
+
+.dashboard-score-circle::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: var(--card-bg);
+}
+
+.dashboard-score-circle div {
+  position: relative;
+  transform: none;
+}
+
+.table-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px 0 !important;
+}
+
+.dashboard-empty-note {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 8px 0 16px;
+}
+
+.dashboard-error {
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 13px;
+}
